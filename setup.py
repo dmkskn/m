@@ -13,7 +13,7 @@ def get_long_description() -> str:
 
 setup(
     name="film",
-    verison="1.0.0",
+    version="1.0.0",
     license="MIT",
     author="Dima Koskin",
     author_email="dmksknn@gmail.com",
