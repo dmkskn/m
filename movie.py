@@ -109,7 +109,7 @@ def get_second_title(movie):
 
 def get_directors_names(movie):
     names = (p.name for p, c in movie.crew if c.job == "Director")
-    names = (", ".join(name.rsplit(maxsplit=1)) for name in names)
+    names = (", ".join(reversed(name.rsplit(maxsplit=1))) for name in names)
     return "; ".join(sorted(names))
 
 
