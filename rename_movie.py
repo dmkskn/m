@@ -6,17 +6,8 @@ from itertools import islice
 from pathlib import Path
 
 import isle
+import macos_tags
 
-
-try:
-    TAG = sp.check_output(["which", "tag"]).decode("utf-8").strip()
-except sp.CalledProcessError:
-    raise RuntimeError(
-        (
-            "The script requires jdberry's tag command"
-            "line tool.\nSee: 'https://github.com/jdberry/tag'"
-        )
-    )
 
 FORMAT = "{year} - {first_title}{second_title}"
 YES_OR_NO = "(y/n, default y)"
@@ -39,7 +30,7 @@ def stylized(style, string):
 
 
 def add_tag_to(path, *, tag):
-    sp.run([TAG, "-a", tag, str(path)])
+    macos_tags.add(tag, file=path)
 
 
 def parse_args():
@@ -63,6 +54,7 @@ def _y_or_n(ask):
         if ans in ("y", "n"):
             return True if ans == "y" else False
 
+
 def ask_rename():
     return _y_or_n("Needs to be renamed (y/n, default y):")
 
@@ -82,7 +74,7 @@ def print_movies(movies):
 
 
 def ask_movie(movies):
-    ask = 'Choose a movie (1 is by default):'
+    ask = "Choose a movie (1 is by default):"
     while True:
         i = int(input(f"\n{stylized('bold', ask)} ") or "1")
         if i in range(1, len(movies) + 1):
@@ -151,6 +143,7 @@ def main():
         path.rename(new_path)
 
     print_done()
+
 
 if __name__ == "__main__":
     main()
