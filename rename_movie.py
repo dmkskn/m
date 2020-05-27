@@ -6,17 +6,8 @@ from itertools import islice
 from pathlib import Path
 
 import isle
+import macos_tags
 
-
-try:
-    TAG = sp.check_output(["which", "tag"]).decode("utf-8").strip()
-except sp.CalledProcessError:
-    raise RuntimeError(
-        (
-            "The script requires jdberry's tag command"
-            "line tool.\nSee: 'https://github.com/jdberry/tag'"
-        )
-    )
 
 FORMAT = "{year} - {first_title}{second_title}"
 YES_OR_NO = "(y/n, default y)"
@@ -39,13 +30,14 @@ def stylized(style, string):
 
 
 def add_tag_to(path, *, tag):
-    sp.run([TAG, "-a", tag, str(path)])
+    macos_tags.add(tag, file=path)
 
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("path", type=str, help="the path to a movie file")
     parser.add_argument("-n", type=int, default=5, help="number of search results")
+    parser.add_argument("-k", "--api", type=str, default=None, help="TMDb API key")
     return vars(parser.parse_args())
 
 
@@ -62,6 +54,7 @@ def _y_or_n(ask):
         ans = input(f"\n{stylized('bold', ask)} ") or "y"
         if ans in ("y", "n"):
             return True if ans == "y" else False
+
 
 def ask_rename():
     return _y_or_n("Needs to be renamed (y/n, default y):")
@@ -82,7 +75,7 @@ def print_movies(movies):
 
 
 def ask_movie(movies):
-    ask = 'Choose a movie (1 is by default):'
+    ask = "Choose a movie (1 is by default):"
     while True:
         i = int(input(f"\n{stylized('bold', ask)} ") or "1")
         if i in range(1, len(movies) + 1):
@@ -119,7 +112,10 @@ def print_done():
 
 def main():
     args = parse_args()
-    path, n = Path(args["path"]), args["n"]
+    path, n, tmdb_api_key = Path(args["path"]), args["n"], args["api"]
+
+    if tmdb_api_key:
+        isle.TMDB_API_KEY = tmdb_api_key
 
     title = ask_title()
     year = ask_year()
@@ -151,6 +147,7 @@ def main():
         path.rename(new_path)
 
     print_done()
+
 
 if __name__ == "__main__":
     main()
