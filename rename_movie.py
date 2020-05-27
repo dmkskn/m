@@ -37,6 +37,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("path", type=str, help="the path to a movie file")
     parser.add_argument("-n", type=int, default=5, help="number of search results")
+    parser.add_argument("-k", "--api", type=str, default=None, help="TMDb API key")
     return vars(parser.parse_args())
 
 
@@ -111,7 +112,10 @@ def print_done():
 
 def main():
     args = parse_args()
-    path, n = Path(args["path"]), args["n"]
+    path, n, tmdb_api_key = Path(args["path"]), args["n"], args["api"]
+
+    if tmdb_api_key:
+        isle.TMDB_API_KEY = tmdb_api_key
 
     title = ask_title()
     year = ask_year()
