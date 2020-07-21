@@ -1,5 +1,6 @@
 """A script renames the movie file, tags it with genres, and moves
 to the folder with the director’s name."""
+import os
 import subprocess as sp
 from argparse import ArgumentParser
 from itertools import islice
@@ -7,6 +8,9 @@ from pathlib import Path
 
 import isle
 import macos_tags
+
+
+TMDB_API_KEY = os.environ.get("TMDB_API_KEY")
 
 
 FORMAT = "{year} - {first_title}{second_title}"
@@ -114,8 +118,11 @@ def main():
     args = parse_args()
     path, n, tmdb_api_key = Path(args["path"]), args["n"], args["api"]
 
-    if tmdb_api_key:
-        isle.TMDB_API_KEY = tmdb_api_key
+    print(f"{isle.TMDB_API_KEY=}")
+
+    isle.TMDB_API_KEY = tmdb_api_key or TMDB_API_KEY
+
+    print(f"{isle.TMDB_API_KEY=}")
 
     title = ask_title()
     year = ask_year()
